@@ -1,0 +1,41 @@
+form.signup,
+form.login {
+  margin-top: 50px;
+  /* font-family: 'Tangerine', cursive;
+  color: #eeeeee;
+  font-size: 33px; */
+}
+
+label{
+  font-family: 'Tangerine', cursive;
+  color: #eeeeee;
+  font-size: 33px;
+}
+
+.form-control{
+  text-align: center;
+  font-family: 'Tangerine', cursive;
+  font-size: 23px;
+}
+
+body{
+  text-align: center;
+  background-color: #d60072;
+  background-image: url("https://www.transparenttextures.com/patterns/diagmonds.png");
+}
+
+
+
+h2{
+  font-family: 'Clicker Script', cursive;
+  font-size: 82px;
+  color: white;
+}
+
+p{
+  color: #eeeeee;
+}
+
+.checkers{
+  font: arial;
+}
