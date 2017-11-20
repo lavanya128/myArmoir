@@ -27,10 +27,6 @@ module.exports = function(app) {
   // Here we've add our isAuthenticated middleware to this route.
   // If a user who is not logged in tries to access this route they will be redirected to the signup page
   app.get("/categories", isAuthenticated, function(req, res) {
-    db.Categories.findAll({attributes:['image_url']}).then(function(dbCategories)
-  {
-      console.log(dbCategories);
-  });
  
     res.sendFile(path.join(__dirname, "../public/categories.html"));
   });

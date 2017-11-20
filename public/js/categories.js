@@ -1,67 +1,404 @@
 
-//   // and updates the HTML on the page
-  // $.get("/api/user_data").then(function(data) {
-  //   $(".member-name").text(data.email);
-  // });
+  	$(document).ready(function() 
+    {
 
-  // $('#checkBtn').click(function() {
-  //     var checked = $("input[type=checkbox]:checked").length;
+       $.get("/api/user_data").then(function(data) 
+       {
+          $(".member-name").text(data.email);
+        });
 
-  //     if(!checked) {
-  //       alert("You must check at least one checkbox.");
-  //       return false;
-  //     }
+       $.get("/api/categories").done(function(categories) 
+      {
 
-  //   });
+        console.log(categories);
+        console.log(categories.length);
+        //console.log(categories.id);
 
-  // $("input[type='checkbox'][name='Categories']").change(function() {
-  //   $('.btn-default').valid();
+     for(var i=0 ; i< categories.length  ; i++) 
+     {
+      console.log(i);
+      $('.hide-bullets').append('<li class="col-sm-3"><a class="thumbnail" id="carousel-selector-'+i+'"><img src="uploads/'+categories[i].image_url+'" alt="'+categories[i].id+'"></a></li>');
 
-  $(document).on("submit", '.signup', function(event)
-  {
-  	// event.preventDefault();
-  	// console.log('hello');
-  	// // var checked = $("input[type=checkbox]:checked").length;
+      }
 
-   // //    if(!checked) {
-   // //      alert("You must check at least one checkbox.");
-   // //      return false;
-   // //    }
-  	// var categories = {
-  	// 	//top: 
-   //    //top: $('#checkBtn').val();
-   //    top: $('#checkBtn1').is(":checked"),
-   //    bottom: $('#checkBtn2').is(":checked"),
-   //    dress: $('#checkBtn3').is(":checked"),
-   //    socks: $('#checkBtn4').is(":checked"),
-   //    shoes: $('#checkBtn5').is(":checked"),
-   //    accessories: $('#checkBtn6').is(":checked"),
-   //    planner: $('#checkBtn6').is(":checked"),
-   //    favorites: $('#checkBtn6').is(":checked"),
-  	// 	color: $("#color-input").val().trim(),
-  	// 	emotion: $("#emotion-input").val().trim(),
-  	// 	brand: $("#brand-input").val().trim(),
-  	// 	seson_type: $("#season-input").val().trim()
-  		
-  	// };
-  	// console.log(categories); 
-   //  $.post('/new-category', categories).done(function(data) {
-   //    console.log(data);
-   //  });
+    $('.carousel-inner').html('<div class="active item" data-slide-number="'+0+'"><img src="uploads/'+categories[0].image_url+'"></div>');
 
+        $('#myCarousel').carousel({
+                interval: 5000
+        });
+ 
+        //Handles the carousel thumbnails
+        $('[id^=carousel-selector-]').click(function () 
+        {
+          var id_selector = $(this).attr("id");
+          console.log(id_selector);
+        //var imgClicked = $(this).data("src");
+          try {
+            var id = /-(\d+)$/.exec(id_selector)[1];
+            console.log(id_selector, id);
+            console.log(id);
+            console.log(categories[id].image_url);
+            console.log(categories[id].id);
+            $('.carousel-inner').html('<div class="active item" data-slide-number="'+id+'"><img src="uploads/'+categories[id].image_url+'" alt="'+categories[id].id+'"></div>');
+            delid = categories[id].id;
+            var delBtn = $('<button>');
+            delBtn.attr("id",categories[id].id);
+            delBtn.attr("value","Delete");
+            delBtn.text("Delete");
+            $('#btnDelete').html(delBtn);
+            jQuery('#myCarousel').carousel(parseInt(id));
+        } catch (e) {
+            console.log('Regex failed!', e);
+        }
+      });
+        // When the carousel slides, auto update the text
+        $('#myCarousel').on('slid.bs.carousel', function (e) {
+            //alert('hello');
+                 var id = $('.item.active').data('slide-number');
+                 console.log(id);
+                $('#carousel-text').html($('#slide-content-'+id).html());
+        });
     });
 
-  	
+
+       $('#btnDelete, #btnDress, #btnTops, #btnBottoms, #btnAccessories, #btnShoes').click(function () {
+   if (this.id == 'btnDelete') {
+      alert('btnDelete 1 clicked');
+      var delid = $(this).children('button').attr("id")
+
+          console.log(delid);
+          $.ajax({
+            method: "DELETE",
+            url: "/api/categories/" + delid
+          }).done(function(data) { 
+            console.log(data);
+            window.location = data
+          });
+
+   }
+   else if (this.id == 'btnDress') {
+      //alert('btnDress 2 clicked');
+      $('.hide-bullets').empty();
+      $('.carousel-inner').empty();
+      $.get("/api/categories/dress").done(function(categories) 
+      {
+
+        console.log(categories);
+        console.log(categories.length);
+        //console.log(categories.id);
+
+     for(var i=0 ; i< categories.length  ; i++) {
+    console.log(i);
+      $('.hide-bullets').append('<li class="col-sm-3"><a class="thumbnail" id="carousel-selector-'+i+'"><img src="uploads/'+categories[i].image_url+'" alt="'+categories[i].id+'"></a></li>');
+
+    }
+
+    $('.carousel-inner').html('<div class="active item" data-slide-number="'+0+'"><img src="uploads/'+categories[0].image_url+'"></div>');
+
+        $('#myCarousel').carousel({
+                interval: 5000
+        });
+ 
+        //Handles the carousel thumbnails
+        $('[id^=carousel-selector-]').click(function () {
+        var id_selector = $(this).attr("id");
+        console.log(id_selector);
+        //var imgClicked = $(this).data("src");
+        try {
+            var id = /-(\d+)$/.exec(id_selector)[1];
+            console.log(id_selector, id);
+            console.log(id);
+            console.log(categories[id].image_url);
+            console.log(categories[id].id);
+            $('.carousel-inner').html('<div class="active item" data-slide-number="'+id+'"><img src="uploads/'+categories[id].image_url+'" alt="'+categories[id].id+'"></div>');
+            delid = categories[id].id;
+            var delBtn = $('<button>');
+            delBtn.attr("id",categories[id].id);
+            delBtn.attr("value","Delete");
+            delBtn.text("Delete");
+            $('#btnDelete').html(delBtn);
+            jQuery('#myCarousel').carousel(parseInt(id));
+        } catch (e) {
+            console.log('Regex failed!', e);
+        }
+    });
+        // When the carousel slides, auto update the text
+        $('#myCarousel').on('slid.bs.carousel', function (e) {
+            //alert('hello');
+                 var id = $('.item.active').data('slide-number');
+                 console.log(id);
+                $('#carousel-text').html($('#slide-content-'+id).html());
+        });
+    });
+
+   }
+
+   else if (this.id == 'btnTops') {
+       //alert('#btnTops 2 clicked');
+       $('.hide-bullets').empty();
+      $('.carousel-inner').empty();
+       $.get("/api/categories/top").done(function(categories) 
+      {
+
+        console.log(categories);
+        console.log(categories.length);
+        //console.log(categories.id);
+
+     for(var i=0 ; i< categories.length  ; i++) {
+    console.log(i);
+      $('.hide-bullets').append('<li class="col-sm-3"><a class="thumbnail" id="carousel-selector-'+i+'"><img src="uploads/'+categories[i].image_url+'" alt="'+categories[i].id+'"></a></li>');
+
+    }
+
+    $('.carousel-inner').html('<div class="active item" data-slide-number="'+0+'"><img src="uploads/'+categories[0].image_url+'"></div>');
+
+        $('#myCarousel').carousel({
+                interval: 5000
+        });
+ 
+        //Handles the carousel thumbnails
+        $('[id^=carousel-selector-]').click(function () {
+        var id_selector = $(this).attr("id");
+        console.log(id_selector);
+        //var imgClicked = $(this).data("src");
+        try {
+            var id = /-(\d+)$/.exec(id_selector)[1];
+            console.log(id_selector, id);
+            console.log(id);
+            console.log(categories[id].image_url);
+            console.log(categories[id].id);
+            $('.carousel-inner').html('<div class="active item" data-slide-number="'+id+'"><img src="uploads/'+categories[id].image_url+'" alt="'+categories[id].id+'"></div>');
+            delid = categories[id].id;
+            var delBtn = $('<button>');
+            delBtn.attr("id",categories[id].id);
+            delBtn.attr("value","Delete");
+            delBtn.text("Delete");
+            $('#btnDelete').html(delBtn);
+            jQuery('#myCarousel').carousel(parseInt(id));
+        } catch (e) {
+            console.log('Regex failed!', e);
+        }
+    });
+        // When the carousel slides, auto update the text
+        $('#myCarousel').on('slid.bs.carousel', function (e) {
+            //alert('hello');
+                 var id = $('.item.active').data('slide-number');
+                 console.log(id);
+                $('#carousel-text').html($('#slide-content-'+id).html());
+        });
+    });
+   }
+
+   else if (this.id == 'btnBottoms') {
+       //alert('btnBottoms 2 clicked');
+       $('.hide-bullets').empty();
+      $('.carousel-inner').empty();
+       $.get("/api/categories/bottom").done(function(categories) 
+       {
+
+        console.log(categories);
+        console.log(categories.length);
+        //console.log(categories.id);
+
+     for(var i=0 ; i< categories.length  ; i++) {
+    console.log(i);
+      $('.hide-bullets').append('<li class="col-sm-3"><a class="thumbnail" id="carousel-selector-'+i+'"><img src="uploads/'+categories[i].image_url+'" alt="'+categories[i].id+'"></a></li>');
+
+    }
+
+    $('.carousel-inner').html('<div class="active item" data-slide-number="'+0+'"><img src="uploads/'+categories[0].image_url+'"></div>');
+
+        $('#myCarousel').carousel({
+                interval: 5000
+        });
+ 
+        //Handles the carousel thumbnails
+        $('[id^=carousel-selector-]').click(function () {
+        var id_selector = $(this).attr("id");
+        console.log(id_selector);
+        //var imgClicked = $(this).data("src");
+        try {
+            var id = /-(\d+)$/.exec(id_selector)[1];
+            console.log(id_selector, id);
+            console.log(id);
+            console.log(categories[id].image_url);
+            console.log(categories[id].id);
+            $('.carousel-inner').html('<div class="active item" data-slide-number="'+id+'"><img src="uploads/'+categories[id].image_url+'" alt="'+categories[id].id+'"></div>');
+            delid = categories[id].id;
+            var delBtn = $('<button>');
+            delBtn.attr("id",categories[id].id);
+            delBtn.attr("value","Delete");
+            delBtn.text("Delete");
+            $('#btnDelete').html(delBtn);
+            jQuery('#myCarousel').carousel(parseInt(id));
+        } catch (e) {
+            console.log('Regex failed!', e);
+        }
+    });
+        // When the carousel slides, auto update the text
+        $('#myCarousel').on('slid.bs.carousel', function (e) {
+            //alert('hello');
+                 var id = $('.item.active').data('slide-number');
+                 console.log(id);
+                $('#carousel-text').html($('#slide-content-'+id).html());
+        });
+    });
+   }
+
+   else if (this.id == 'btnAccessories') {
+       //alert('btnAccessories 2 clicked');
+       $('.hide-bullets').empty();
+      $('.carousel-inner').empty();
+       $.get("/api/categories/accessories").done(function(categories) 
+        {
+
+        console.log(categories);
+        console.log(categories.length);
+        //console.log(categories.id);
+
+     for(var i=0 ; i< categories.length  ; i++) {
+    console.log(i);
+      $('.hide-bullets').append('<li class="col-sm-3"><a class="thumbnail" id="carousel-selector-'+i+'"><img src="uploads/'+categories[i].image_url+'" alt="'+categories[i].id+'"></a></li>');
+
+    }
+
+    $('.carousel-inner').html('<div class="active item" data-slide-number="'+0+'"><img src="uploads/'+categories[0].image_url+'"></div>');
+
+        $('#myCarousel').carousel({
+                interval: 5000
+        });
+ 
+        //Handles the carousel thumbnails
+        $('[id^=carousel-selector-]').click(function () {
+        var id_selector = $(this).attr("id");
+        console.log(id_selector);
+        //var imgClicked = $(this).data("src");
+        try {
+            var id = /-(\d+)$/.exec(id_selector)[1];
+            console.log(id_selector, id);
+            console.log(id);
+            console.log(categories[id].image_url);
+            console.log(categories[id].id);
+            $('.carousel-inner').html('<div class="active item" data-slide-number="'+id+'"><img src="uploads/'+categories[id].image_url+'" alt="'+categories[id].id+'"></div>');
+            delid = categories[id].id;
+            var delBtn = $('<button>');
+            delBtn.attr("id",categories[id].id);
+            delBtn.attr("value","Delete");
+            delBtn.text("Delete");
+            $('#btnDelete').html(delBtn);
+            jQuery('#myCarousel').carousel(parseInt(id));
+        } catch (e) {
+            console.log('Regex failed!', e);
+        }
+    });
+        // When the carousel slides, auto update the text
+        $('#myCarousel').on('slid.bs.carousel', function (e) {
+            //alert('hello');
+                 var id = $('.item.active').data('slide-number');
+                 console.log(id);
+                $('#carousel-text').html($('#slide-content-'+id).html());
+        });
+    });
+   }
+
+   else if (this.id == 'btnShoes') {
+      //alert('#btnShoes 2 clicked');
+      $('.hide-bullets').empty();
+      $('.carousel-inner').empty();
+      $.get("/api/categories/shoes").done(function(categories) 
+         {
+
+        console.log(categories);
+        console.log(categories.length);
+        //console.log(categories.id);
+
+     for(var i=0 ; i< categories.length  ; i++) {
+    console.log(i);
+      $('.hide-bullets').append('<li class="col-sm-3"><a class="thumbnail" id="carousel-selector-'+i+'"><img src="uploads/'+categories[i].image_url+'" alt="'+categories[i].id+'"></a></li>');
+
+    }
+
+    $('.carousel-inner').html('<div class="active item" data-slide-number="'+0+'"><img src="uploads/'+categories[0].image_url+'"></div>');
+
+        $('#myCarousel').carousel({
+                interval: 5000
+        });
+ 
+        //Handles the carousel thumbnails
+        $('[id^=carousel-selector-]').click(function () {
+        var id_selector = $(this).attr("id");
+        console.log(id_selector);
+        //var imgClicked = $(this).data("src");
+        try {
+            var id = /-(\d+)$/.exec(id_selector)[1];
+            console.log(id_selector, id);
+            console.log(id);
+            console.log(categories[id].image_url);
+            console.log(categories[id].id);
+            $('.carousel-inner').html('<div class="active item" data-slide-number="'+id+'"><img src="uploads/'+categories[id].image_url+'" alt="'+categories[id].id+'"></div>');
+            delid = categories[id].id;
+            var delBtn = $('<button>');
+            delBtn.attr("id",categories[id].id);
+            delBtn.attr("value","Delete");
+            delBtn.text("Delete");
+            $('#btnDelete').html(delBtn);
+            jQuery('#myCarousel').carousel(parseInt(id));
+        } catch (e) {
+            console.log('Regex failed!', e);
+        }
+    });
+        // When the carousel slides, auto update the text
+        $('#myCarousel').on('slid.bs.carousel', function (e) {
+            //alert('hello');
+                 var id = $('.item.active').data('slide-number');
+                 console.log(id);
+                $('#carousel-text').html($('#slide-content-'+id).html());
+        });
+    });
+    }
+  });
+});
+
+   // window.onload = function (e) {
 
 
-  
+   // }
 
-// app.use(express.static('public'));
-// app.use(bodyParser.urlencoded({ extended: false }));
+        // $('#btnDelete').on('click', function(event)
+        // {
+          
 
-// app.get('/categories.html', function (req, res) {
-//     res.sendFile( __dirname + "/" + "categories.html" );
-// });
+        // });
+
+      
+
+
+    // $('#btnDress').on('click', function(evet)
+    //     {
+      
+    // });
+
+    //   $('#btnTops').on('click', function(evet)
+    //     {
+      
+    // });
+
+     //  $('#btnBottoms').on('click', function(evet)
+     //    {
+       
+     // });
+
+      //   $('#btnAccessories').on('click', function(evet)
+      //   {
+        
+      // });
+
+       //  $('#btnShoes').on('click', function(evet)
+       //  {
+         
+      
+
+
 
 
 
